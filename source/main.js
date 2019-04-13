@@ -196,136 +196,45 @@ var CardWeaver = (function(){
 		this.color = hex;
 	}
 
+	var loopValue = function(value, max, min=0){
+		var v = value-min;
+		while(v<0)v = max-min+v+1;
+		return v%(max-min+1) + min;
+	}
+
 	return {
 		Ribbon: Ribbon
     };
 })();
-var loopValue = function(value, max, min=0){
-	var v = value-min;
-	while(v<0)v = max-min+v+1;
-	return v%(max-min+1) + min;
-}
-var ribbon;
 function setup(){
 
 	ribbon = new CardWeaver.Ribbon();
-	var string1 = ribbon.newString();
-	var string2 = ribbon.newString();
-	var string3 = ribbon.newString();
-	string1.setColor("blue");
-	string2.setColor("red");
-	string3.setColor("black");
-
-	card0 = ribbon.newCard();
-	card1 = ribbon.newCard();
-	card2 = ribbon.newCard();
-	card3 = ribbon.newCard();
-	card4 = ribbon.newCard();
-	card5 = ribbon.newCard();
-	card6 = ribbon.newCard();
-	card7 = ribbon.newCard();
-
-	card0.setStrings(string3,string3,string3,string3);
-	card0.setThreading("z");
-
-	card1.setStrings(string2,string1,string2,string1);
-	card1.setThreading("z");
-
-	card2.setStrings(string1,string2,string1,string2);
-	card2.setThreading("z");
-
-	card3.setStrings(string2,string1,string2,string1);
-	card3.setThreading("z");
-
-	card4.setStrings(string1,string2,string1,string2);
-	card4.setThreading("s");
-
-	card5.setStrings(string2,string1,string2,string1);
-	card5.setThreading("s");
-
-	card6.setStrings(string1,string2,string1,string2);
-	card6.setThreading("s");
-
-	card7.setStrings(string3,string3,string3,string3);
-	card7.setThreading("s");
-
-	ribbon.setTurn(0,0,1);
-	ribbon.setTurn(0,1,1);
-	ribbon.setTurn(0,2,1);
-	ribbon.setTurn(0,3,1);
-	ribbon.setTurn(0,4,1);
-	ribbon.setTurn(0,5,1);
-	ribbon.setTurn(0,6,1);
-	ribbon.setTurn(0,7,1);
-
-	ribbon.setTurn(1,1,1);
-	ribbon.setTurn(1,2,1);
-	ribbon.setTurn(1,3,1);
-	ribbon.setTurn(1,4,1);
-	ribbon.setTurn(1,5,1);
-	ribbon.setTurn(1,6,1);
-
-	ribbon.setTurn(2,1,1);
-	ribbon.setTurn(2,2,1);
-	ribbon.setTurn(2,3,1);
-	ribbon.setTurn(2,4,1);
-	ribbon.setTurn(2,5,1);
-	ribbon.setTurn(2,6,1);
-
-	ribbon.setTurn(3,1,1);
-	ribbon.setTurn(3,2,1);
-	ribbon.setTurn(3,3,1);
-	ribbon.setTurn(3,4,1);
-	ribbon.setTurn(3,5,1);
-	ribbon.setTurn(3,6,1);
-
-	ribbon.setTurn(4,1,-1);
-	ribbon.setTurn(4,2,-1);
-	ribbon.setTurn(4,3,-1);
-	ribbon.setTurn(4,4,-1);
-	ribbon.setTurn(4,5,-1);
-	ribbon.setTurn(4,6,-1);
-
-	ribbon.setTurn(5,1,-1);
-	ribbon.setTurn(5,2,-1);
-	ribbon.setTurn(5,3,-1);
-	ribbon.setTurn(5,4,-1);
-	ribbon.setTurn(5,5,-1);
-	ribbon.setTurn(5,6,-1);
-
-	ribbon.setTurn(6,1,-1);
-	ribbon.setTurn(6,2,-1);
-	ribbon.setTurn(6,3,-1);
-	ribbon.setTurn(6,4,-1);
-	ribbon.setTurn(6,5,-1);
-	ribbon.setTurn(6,6,-1);
-
-	ribbon.setTurn(7,1,-1);
-	ribbon.setTurn(7,2,-1);
-	ribbon.setTurn(7,3,-1);
-	ribbon.setTurn(7,4,-1);
-	ribbon.setTurn(7,5,-1);
-	ribbon.setTurn(7,6,-1);
+	ribbon.load('{"width":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1]],"strings":[{"color":"blue"},{"color":"red"},{"color":"black"}]}')
 	drawRibbon(ribbon);
 }
+
+function addString(){
+
+}
+
 function drawRibbon(ribbon){
 	var table = document.getElementById("ribbonPreview");
 	for (column of ribbon.cards){
 		var y = document.createElement("TR");
 		table.appendChild(y);
 	}
-	for (var k=0; k<8; k++){
+	for (var k=0; k<50; k++){
 		var row = table.insertRow(0);
 		var colors = ribbon.getTopRowStrings(k);
 		var twists = ribbon.getTopRowTwists(k);
 		for (var k2 = 0; k2<ribbon.width; k2++){
 			var cell = row.insertCell(k2);
-			cell.style.color = colors[k2].color;
+			cell.style.backgroundColor = colors[k2].color;
 			if (twists[k2]<0){
-				cell.innerHTML = "\\";
+				cell.className="left"
 			}
 			else{
-				cell.innerHTML = "/";
+				cell.className="right"
 			}
 		}
 	}
