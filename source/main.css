@@ -1,0 +1,27 @@
+body{
+	padding: 0pt;
+	margin: 0pt;
+}
+body * {
+	background-color: rgba(0, 0, 0, 0.0);
+}
+#ribbonPreview_box{
+	display: block;
+	position: fixed;
+	width:100pt;
+	height: 100%;
+	overflow: scroll;
+	border:3px solid black;
+}
+#ribbonPreview{
+	font-weight:900;
+	float:right;
+}
+#ribbonPreview td{
+	padding: 0pt;
+	margin: 0pt;
+	font-size: 17pt;
+	line-height: 10pt;
+	height: 10pt;
+	width: 0pt;
+}
