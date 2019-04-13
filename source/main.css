@@ -1,27 +1,81 @@
 body{
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content:center;
+	flex-wrap: nowrap;
+	height: 100%;
+
 	padding: 0pt;
 	margin: 0pt;
+
+	background-color:#607D8B;
+	font-family: sans-serif;
 }
 body * {
-	background-color: rgba(0, 0, 0, 0.0);
+	background-color: rgba(0, 0, 0, 0.1);
 }
-#ribbonPreview_box{
-	display: block;
-	position: fixed;
-	width:100pt;
-	height: 100%;
-	overflow: scroll;
-	border:3px solid black;
+#settings_panel{
+	display: flex;
+	flex-direction: row;
+	box-shadow: 0 0 50pt black;
+	z-index:10;
 }
-#ribbonPreview{
-	font-weight:900;
-	float:right;
+.tile{
+	display:block;
+	background: #FAFAFA;
+	margin-top: 5pt;
 }
-#ribbonPreview td{
+.tile h1{
+	line-height: 6pt;
+	padding: 0pt;
+	font-size: 20pt;
+	font-weight: normal;
+}
+#cards{
+	height: 200pt;
+}
+#cards ul{
 	padding: 0pt;
 	margin: 0pt;
-	font-size: 17pt;
-	line-height: 10pt;
-	height: 10pt;
-	width: 0pt;
+	list-style-type:none;
+}
+#cards ul li{
+	padding: 0pt;
+	margin: 0pt;
+	height: 30pt;
+	width: 20pt;
+	float: left;
+	background-color: grey;
+}
+
+
+#pattern_panel{
+	flex-grow:1;
+	display:block;
+	overflow: hidden;
+	overflow-y: scroll;
+}
+#ribbonPreview{
+	display:block;
+	vertical-align: center;
+	border-spacing: 0px;
+}
+#ribbonPreview td{
+	display: inline-block;
+	height: 30pt;
+	width: 10pt;
+
+	padding: 0pt;
+	margin: 0pt;
+	margin-left:5pt;
+	margin-right:5pt;
+	line-height: 30pt;
+}
+#ribbonPreview .left{
+	transform: skew(34deg);
+
+}
+#ribbonPreview .right{
+	transform: skew(-34deg);
 }
