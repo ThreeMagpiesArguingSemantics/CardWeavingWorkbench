@@ -244,11 +244,14 @@ function setup(){
 	ribbon.load('{"width":8,"length":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,1,1,1,1]],"strings":[{"color":"blue"},{"color":"red"},{"color":"grey"}]}')
 	drawRibbon(40);
 	fillRibbon();
+	generateCardSettings()
 }
 
 function drawRibbon(length){
 	var ribbonPreview = document.getElementById("ribbonPreview");
 	var turnInstructions = document.getElementById("turnInstructions");
+	ribbonPreview.innerHTML = "";
+	turnInstructions.innerHTML = "";
 	for (var k=0; k<length; k++){
 		var row_preview = ribbonPreview.insertRow(0);
 		for (var k2 = 0; k2<ribbon.width; k2++){
@@ -258,6 +261,83 @@ function drawRibbon(length){
 		row_instructions.insertCell(0);
 	}
 
+}
+function generateCardSettings(){
+	var parrent = document.getElementById("card_settings");
+	parrent.innerHTML = "";
+
+	// tabs
+	var tabs = document.createElement("ul");
+	tabs.onclick = function(e){
+		e = e || window.event;
+		var element = e.target || e.srcElement;
+		if (element.nodeName.toLowerCase() != "li")return;
+
+		var sections = document.getElementById("card_settings").getElementsByClassName("section");
+		for(var sec of sections){
+			sec.className = "section";
+		}
+
+		var tabs = document.getElementById("card_settings").getElementsByTagName("li");
+		for(var tab of tabs){
+			tab.style = "";
+		}
+		element.style.backgroundColor="white";
+		sections[element.value].className = "section active";
+	}
+	for(var k=0; k<ribbon.width; k++){
+		var tab = document.createElement("li");
+		tab.value=k;
+		tabs.appendChild(tab);
+	}
+	parrent.appendChild(tabs);
+
+	// sections
+	for(var k=0; k<ribbon.width; k++){
+		let card = ribbon.cards[k];
+
+		// holes
+		let section = document.createElement("div");
+		section.className="section";
+
+		let holes_selector = document.createElement("input");
+		holes_selector.type = "number";
+		holes_selector.max = 12;
+		holes_selector.min = 2;
+		holes_selector.value = card.holes;
+		holes_selector.onchange = function(){
+			card.setHoles(holes_selector.valueAsNumber);
+			generateCardSettings();
+			fillRibbon();
+		};
+		section.appendChild(holes_selector);
+
+		// strings
+		for(var k2=0; k2<card.holes; k2++){
+
+			let string_selector = document.createElement("select");
+			string_selector
+			string_selector.style.backgroundColor = card.strings[k2].color;
+			let index = k2;
+			string_selector.onchange=function(){
+				string_selector.style.backgroundColor = ribbon.strings[string_selector.value].color;
+				card.setString(index,ribbon.strings[string_selector.value]);
+				fillRibbon();
+			}
+
+			for(var k3=0; k3<ribbon.strings.length; k3++){
+				var option = document.createElement("option");
+				option.value = k3;
+				option.innerHTML = "string "+k3;
+				option.style.backgroundColor = ribbon.strings[k3].color;
+				string_selector.appendChild(option);
+			}
+
+			section.appendChild(string_selector);
+		}
+		parrent.appendChild(section);
+	}
+	document.getElementById("card_settings").getElementsByClassName("section")[0].className="section active";
 }
 function fillRibbon(){
 	var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
@@ -271,7 +351,7 @@ function fillRibbon(){
 
 		if (ribbon.length-1<k){
 			rows_instructions[inv_k].className="grey";
-			rows_preview[inv_k].className+=" grey";
+			rows_preview[inv_k].className="grey";
 		}
 
 		var cells_preview =  rows_preview[inv_k].getElementsByTagName("td")
@@ -300,7 +380,6 @@ function swapTwist(e){
 	else return;
 
 	ribbon.swapTwist(row, column);
-	console.log(row+" "+column);
 	fillRibbon();
 	//alert('You click on row ' + row+" and cell "+column);
 }

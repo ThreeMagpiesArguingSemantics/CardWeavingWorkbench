@@ -16,8 +16,10 @@ body * {
 #settings_panel{
 	display: flex;
 	flex-direction: row;
+
 	box-shadow: 0 0 50pt black;
 	z-index:10;
+	height: 250pt;
 }
 .tile{
 	display:block;
@@ -30,21 +32,39 @@ body * {
 	font-size: 20pt;
 	font-weight: normal;
 }
-#cards{
-	height: 200pt;
+#card_settings{
+	margin: 0pt;
 }
-#cards ul{
+#card_settings ul{
 	padding: 0pt;
+	padding-left: 1pt;
+	padding-right: 1pt;
 	margin: 0pt;
 	list-style-type:none;
 }
-#cards ul li{
+#card_settings ul li{
+	display: inline-block;
 	padding: 0pt;
 	margin: 0pt;
 	height: 30pt;
-	width: 20pt;
-	float: left;
 	background-color: grey;
+	width: 24pt;
+}
+#card_settings .section{
+	display: none;
+	height: 200pt;
+	background-color: white;
+}
+#card_settings .active{
+	display: block;
+}
+#card_settings .section select{
+	display: block;
+
+}
+#card_settings .section input{
+	display: block;
+
 }
 
 
