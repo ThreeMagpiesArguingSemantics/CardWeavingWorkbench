@@ -1,6 +1,7 @@
 var CardWeaver = (function(){
 	var Ribbon = function(){
 		this.width = 0;
+		this.length = 0;
 		this.cards = [];
 		this.twists = [];
 		this.strings = [];
@@ -24,6 +25,24 @@ var CardWeaver = (function(){
 				this.removeCard();
 			}
 		}
+	}
+	Ribbon.prototype.setLength = function(length){
+		if (length>=this.length){
+			for(var k1=0; k1<this.width; k1++){
+				for(var k2=this.twists[k1].length; k2<length; k2++){
+					this.twists[k1].push(this.cards[k1].threading=="s"?1:-1);
+				}
+
+			}
+		}
+		else if (length<this.length){
+			for(var k1=0; k1<this.width; k1++){
+				if (length<this.twists[k1].length){
+					this.twists[k1].splice(length,this.twists[k1].length-length+1);
+				}
+			}
+		}
+		this.length = length
 	}
 	Ribbon.prototype.newCard = function(index){
 		var card = new Card();
@@ -148,6 +167,7 @@ var CardWeaver = (function(){
 			c.setThreading(card.threading);
 		}
 		this.width = data.width;
+		this.setLength(data.length);
 
 		this.twists = data.twists;
 
@@ -221,7 +241,7 @@ var CardWeaver = (function(){
 var ribbon = new CardWeaver.Ribbon();
 
 function setup(){
-	ribbon.load('{"width":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1]],"strings":[{"color":"blue"},{"color":"red"},{"color":"grey"}]}')
+	ribbon.load('{"width":8,"length":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,1,1,1,1]],"strings":[{"color":"blue"},{"color":"red"},{"color":"grey"}]}')
 	drawRibbon(40);
 	fillRibbon();
 }
@@ -243,18 +263,18 @@ function fillRibbon(){
 	var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
 	var rows_preview = document.getElementById("ribbonPreview").getElementsByTagName("tr");
 	for (var k=0; k<rows_preview.length; k++){
-
+		var inv_k = rows_preview.length-1-k;
 		var colors = ribbon.getTopRowStrings(k);
 		var twists = ribbon.getTopRowTwists(k);
 		// Instructions
 
-		/*
-		if (ribbon.combinedPeriod-1<k){
-			cell_preview.className="grey";
-		}*/
 
-		// Preview
-		var cells_preview =  rows_preview[rows_preview.length-1-k].getElementsByTagName("td")
+		if (ribbon.length-1<k){
+			rows_instructions[inv_k].className="grey";
+			rows_preview[inv_k].className+=" grey";
+		}
+
+		var cells_preview =  rows_preview[inv_k].getElementsByTagName("td")
 		for (var k2 = 0; k2<ribbon.width; k2++){
 			var cell_preview = cells_preview[k2]
 			cell_preview.style.backgroundColor = colors[k2].color;
@@ -263,9 +283,6 @@ function fillRibbon(){
 			}
 			else{
 				cell_preview.className="right";
-			}
-			if (ribbon.getColumnPeriod(k2)-1<k){
-				cell_preview.className+=" grey";
 			}
 		}
 	}

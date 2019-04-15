@@ -84,7 +84,8 @@ body * {
 	clip-path: polygon(0 0, 100% 40%,100% 100%, 0 60%);
 }
 #ribbonPreview .grey{
-	opacity: 0.5;
+	opacity: 0.6;
+	pointer-events: none;
 }
 
 #turnInstructions tr{
@@ -93,7 +94,7 @@ body * {
 #turnInstructions td{
 	display: block;
 	height: 40pt;
-	width: 1000pt;
+	width: 10pt;
 
 	padding: 0pt;
 	margin: 0pt;
