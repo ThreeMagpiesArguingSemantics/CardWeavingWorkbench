@@ -240,19 +240,32 @@ function drawRibbon(length){
 
 }
 function fillRibbon(){
-	var rows = document.getElementById("ribbonPreview").getElementsByTagName("tr");
-	for (var k=0; k<rows.length; k++){
-		var cells =  rows[rows.length-1-k].getElementsByTagName("td")
+	var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
+	var rows_preview = document.getElementById("ribbonPreview").getElementsByTagName("tr");
+	for (var k=0; k<rows_preview.length; k++){
+
 		var colors = ribbon.getTopRowStrings(k);
 		var twists = ribbon.getTopRowTwists(k);
+		// Instructions
+
+		/*
+		if (ribbon.combinedPeriod-1<k){
+			cell_preview.className="grey";
+		}*/
+
+		// Preview
+		var cells_preview =  rows_preview[rows_preview.length-1-k].getElementsByTagName("td")
 		for (var k2 = 0; k2<ribbon.width; k2++){
-			var cell = cells[k2]
-			cell.style.backgroundColor = colors[k2].color;
+			var cell_preview = cells_preview[k2]
+			cell_preview.style.backgroundColor = colors[k2].color;
 			if (twists[k2]<0){
-				cell.className="left"
+				cell_preview.className="left";
 			}
 			else{
-				cell.className="right"
+				cell_preview.className="right";
+			}
+			if (ribbon.getColumnPeriod(k2)-1<k){
+				cell_preview.className+=" grey";
 			}
 		}
 	}

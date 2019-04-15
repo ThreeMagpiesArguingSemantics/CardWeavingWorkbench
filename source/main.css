@@ -85,7 +85,6 @@ body * {
 }
 #ribbonPreview .grey{
 	opacity: 0.5;
-	cursor: normal !important; 
 }
 
 #turnInstructions tr{
