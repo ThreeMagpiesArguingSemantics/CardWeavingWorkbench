@@ -35,7 +35,6 @@ var CardWeaver = (function(){
 			this.cards.splice(index, 0 , card);
 			this.twists.splice(index, 0 , new Array());
 		}
-
 		this.width++;
 		return card;
 	}
@@ -47,10 +46,16 @@ var CardWeaver = (function(){
 		this.width--;
 		return card;
 	}
-	Ribbon.prototype.setTurn = function(row, column, value){
-		if (this.twists[column].length-1 < row) row = this.twists[column].length;
+	Ribbon.prototype.setTwist = function(row, column, value){
+		if (this.getColumnPeriod(column)-1 < row) row = getColumnPeriod(column);
 		this.twists[column][row] = value;
-		if (this.cards[column].threading === "z") this.twists[column][row]*=-1;
+	}
+	Ribbon.prototype.swapTwist = function(row, column){
+		if (this.getColumnPeriod(column)-1 < row) row = getColumnPeriod(column);
+		this.twists[column][row]*=-1;
+	}
+	Ribbon.prototype.getColumnPeriod = function(column){
+		return this.twists[column].length;
 	}
 	Ribbon.prototype.getCard = function(column){
 		return this.cards[column];
@@ -136,10 +141,10 @@ var CardWeaver = (function(){
 
 		for(var card of data.cards){
 			var c = this.newCard();
-			for(var string of card.strings){
-				string = c.addString(this.strings[string]);
+			c.setHoles(card.holes);
+			for(var k=0; k<card.strings.length; k++){
+				string = c.setString(k, this.strings[card.strings[k]]);
 			}
-			c.holes = card.holes;
 			c.setThreading(card.threading);
 		}
 		this.width = data.width;
@@ -149,21 +154,27 @@ var CardWeaver = (function(){
 	}
 
 	var Card = function(){
-		this.holes = 0;
+		this.holes = 4;
 		this.strings = [];
 		this.threading;
 	}
 	Card.prototype.setString = function(index, string){
-		this.strings.splice(index,1,string);
+		if (index>=this.holes) return;
+		this.strings[index] = string;
 	}
-	Card.prototype.addString = function(string){
-		this.strings.push(string);
-		this.holes++;
+	Card.prototype.setHoles = function(holes){
+		this.holes = holes
+
+		if (this.strings.length>this.holes){
+			for(var k=this.strings.length; k>this.holes; k--){
+				this.strings.splice(-1,1);
+			}
+		}
 	}
 	Card.prototype.setStrings = function(){
 		this.strings = [];
-		for(var string of arguments){
-			this.addString(string)
+		for(var k=0; k<this.holes && k<arguments[k].length; k++){
+			this.setString(index, arguments[k])
 		}
 	}
 	Card.prototype.setThreading = function(threading){
@@ -206,31 +217,36 @@ var CardWeaver = (function(){
 		Ribbon: Ribbon
     };
 })();
+
+var ribbon = new CardWeaver.Ribbon();
+
 function setup(){
-
-	ribbon = new CardWeaver.Ribbon();
 	ribbon.load('{"width":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1]],"strings":[{"color":"blue"},{"color":"red"},{"color":"grey"}]}')
-	drawRibbon(ribbon);
+	drawRibbon(40);
+	fillRibbon();
 }
 
-function addString(){
-
-}
-
-function drawRibbon(ribbon){
+function drawRibbon(length){
 	var ribbonPreview = document.getElementById("ribbonPreview");
 	var turnInstructions = document.getElementById("turnInstructions");
-	for (column of ribbon.cards){
-		var y = document.createElement("TR");
-		ribbonPreview.appendChild(y);
-	}
-	for (var k=0; k<50; k++){
-		var colors = ribbon.getTopRowStrings(k);
-		var twists = ribbon.getTopRowTwists(k);
-
+	for (var k=0; k<length; k++){
 		var row_preview = ribbonPreview.insertRow(0);
 		for (var k2 = 0; k2<ribbon.width; k2++){
-			var cell = row_preview.insertCell(k2);
+			row_preview.insertCell(k2);
+		}
+		var row_instructions = turnInstructions.insertRow(0);
+		row_instructions.insertCell(0);
+	}
+
+}
+function fillRibbon(){
+	var rows = document.getElementById("ribbonPreview").getElementsByTagName("tr");
+	for (var k=0; k<rows.length; k++){
+		var cells =  rows[rows.length-1-k].getElementsByTagName("td")
+		var colors = ribbon.getTopRowStrings(k);
+		var twists = ribbon.getTopRowTwists(k);
+		for (var k2 = 0; k2<ribbon.width; k2++){
+			var cell = cells[k2]
 			cell.style.backgroundColor = colors[k2].color;
 			if (twists[k2]<0){
 				cell.className="left"
@@ -239,9 +255,22 @@ function drawRibbon(ribbon){
 				cell.className="right"
 			}
 		}
-
-		var row_instructions = turnInstructions.insertRow(0);
-		row_instructions.insertCell(0);
 	}
+}
+function swapTwist(e){
+	e = e || window.event;
+	var element = e.target || e.srcElement;
+	var cell;
+	var row;
+	if (element.nodeName.toLowerCase() == "td"){
+		column = element.cellIndex;
+		row = element.parentNode.rowIndex;
+		row = document.getElementById("ribbonPreview").getElementsByTagName("tr").length-1 - row;
+	}
+	else return;
 
+	ribbon.swapTwist(row, column);
+	console.log(row+" "+column);
+	fillRibbon();
+	//alert('You click on row ' + row+" and cell "+column);
 }
