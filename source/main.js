@@ -130,19 +130,6 @@ var CardWeaver = (function(){
 	}
 	Ribbon.prototype.save = function(){
 		var json = JSON.stringify(this);
-		var data = JSON.parse(json);
-
-		for(var k1=0; k1<this.cards.length; k1++){
-			var links = [];
-			for(var string of this.cards[k1].strings){
-				for(var k2=0; k2<this.strings.length; k2++){
-					if (this.strings[k2] === string) links.push(k2);
-				}
-			}
-			data.cards[k1].strings = links;
-		}
-
-		var json = JSON.stringify(data);
 		return json;
 	}
 	Ribbon.prototype.load = function(json){
@@ -161,9 +148,7 @@ var CardWeaver = (function(){
 		for(var card of data.cards){
 			var c = this.newCard();
 			c.setHoles(card.holes);
-			for(var k=0; k<card.strings.length; k++){
-				string = c.setString(k, this.strings[card.strings[k]]);
-			}
+			c.strings = card.strings;
 			c.setThreading(card.threading);
 		}
 		this.width = data.width;
@@ -212,7 +197,7 @@ var CardWeaver = (function(){
 		if (this.holes<=1) return false;
 		if (this.holes !== this.strings.length) return false;
 		for (var string of this.strings){
-			if (!(string instanceof String)) return false;
+			if (string>ribbon.strings.length) return false;
 		}
 		if (!this.threading) return false;
 
@@ -220,7 +205,6 @@ var CardWeaver = (function(){
 	}
 
 	var String = function(){
-		this.id;
 		this.color;
 	}
 	String.prototype.setColor = function(hex){
@@ -262,6 +246,7 @@ function drawRibbon(length){
 	}
 
 }
+
 function generateCardSettings(){
 	var parrent = document.getElementById("card_settings");
 	parrent.innerHTML = "";
@@ -299,7 +284,6 @@ function generateCardSettings(){
 		// holes
 		let section = document.createElement("div");
 		section.className="section";
-
 		let holes_selector = document.createElement("input");
 		holes_selector.type = "number";
 		holes_selector.max = 12;
@@ -316,17 +300,17 @@ function generateCardSettings(){
 		for(var k2=0; k2<card.holes; k2++){
 
 			let string_selector = document.createElement("select");
-			string_selector
-			string_selector.style.backgroundColor = card.strings[k2].color;
+			string_selector.style.backgroundColor = ribbon.strings[card.strings[k2]].color;
 			let index = k2;
 			string_selector.onchange=function(){
 				string_selector.style.backgroundColor = ribbon.strings[string_selector.value].color;
-				card.setString(index,ribbon.strings[string_selector.value]);
+				card.setString(index,string_selector.value);
 				fillRibbon();
 			}
 
 			for(var k3=0; k3<ribbon.strings.length; k3++){
 				var option = document.createElement("option");
+				if (card.strings[k2] == k3) option.selected = "selected"; 
 				option.value = k3;
 				option.innerHTML = "string "+k3;
 				option.style.backgroundColor = ribbon.strings[k3].color;
@@ -339,12 +323,13 @@ function generateCardSettings(){
 	}
 	document.getElementById("card_settings").getElementsByClassName("section")[0].className="section active";
 }
+
 function fillRibbon(){
 	var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
 	var rows_preview = document.getElementById("ribbonPreview").getElementsByTagName("tr");
 	for (var k=0; k<rows_preview.length; k++){
 		var inv_k = rows_preview.length-1-k;
-		var colors = ribbon.getTopRowStrings(k);
+		var strings = ribbon.getTopRowStrings(k);
 		var twists = ribbon.getTopRowTwists(k);
 		// Instructions
 
@@ -357,7 +342,7 @@ function fillRibbon(){
 		var cells_preview =  rows_preview[inv_k].getElementsByTagName("td")
 		for (var k2 = 0; k2<ribbon.width; k2++){
 			var cell_preview = cells_preview[k2]
-			cell_preview.style.backgroundColor = colors[k2].color;
+			cell_preview.style.backgroundColor = ribbon.strings[strings[k2]].color;
 			if (twists[k2]<0){
 				cell_preview.className="left";
 			}
@@ -367,6 +352,7 @@ function fillRibbon(){
 		}
 	}
 }
+
 function swapTwist(e){
 	e = e || window.event;
 	var element = e.target || e.srcElement;
