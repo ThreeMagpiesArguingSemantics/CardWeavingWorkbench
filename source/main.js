@@ -209,7 +209,7 @@ var CardWeaver = (function(){
 function setup(){
 
 	ribbon = new CardWeaver.Ribbon();
-	ribbon.load('{"width":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1]],"strings":[{"color":"blue"},{"color":"red"},{"color":"black"}]}')
+	ribbon.load('{"width":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1]],"strings":[{"color":"blue"},{"color":"red"},{"color":"grey"}]}')
 	drawRibbon(ribbon);
 }
 
@@ -218,17 +218,19 @@ function addString(){
 }
 
 function drawRibbon(ribbon){
-	var table = document.getElementById("ribbonPreview");
+	var ribbonPreview = document.getElementById("ribbonPreview");
+	var turnInstructions = document.getElementById("turnInstructions");
 	for (column of ribbon.cards){
 		var y = document.createElement("TR");
-		table.appendChild(y);
+		ribbonPreview.appendChild(y);
 	}
 	for (var k=0; k<50; k++){
-		var row = table.insertRow(0);
 		var colors = ribbon.getTopRowStrings(k);
 		var twists = ribbon.getTopRowTwists(k);
+
+		var row_preview = ribbonPreview.insertRow(0);
 		for (var k2 = 0; k2<ribbon.width; k2++){
-			var cell = row.insertCell(k2);
+			var cell = row_preview.insertCell(k2);
 			cell.style.backgroundColor = colors[k2].color;
 			if (twists[k2]<0){
 				cell.className="left"
@@ -237,6 +239,9 @@ function drawRibbon(ribbon){
 				cell.className="right"
 			}
 		}
+
+		var row_instructions = turnInstructions.insertRow(0);
+		row_instructions.insertCell(0);
 	}
 
 }

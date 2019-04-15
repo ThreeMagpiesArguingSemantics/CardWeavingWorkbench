@@ -3,7 +3,6 @@ body{
 	flex-direction: column;
 	flex-wrap: nowrap;
 	justify-content:center;
-	flex-wrap: nowrap;
 	height: 100%;
 
 	padding: 0pt;
@@ -13,7 +12,6 @@ body{
 	font-family: sans-serif;
 }
 body * {
-	background-color: rgba(0, 0, 0, 0.1);
 }
 #settings_panel{
 	display: flex;
@@ -52,30 +50,54 @@ body * {
 
 #pattern_panel{
 	flex-grow:1;
-	display:block;
-	overflow: hidden;
+	display: flex;
 	overflow-y: scroll;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content:left;
 }
 #ribbonPreview{
-	display:block;
-	vertical-align: center;
-	border-spacing: 0px;
+	background-color: black;
+}
+}
+#ribbonPreview:hover{
+	opacity: 0.5;
+}
+#ribbonPreview tr{
+}
+#ribbonPreview tr:hover{
 }
 #ribbonPreview td{
 	display: inline-block;
-	height: 30pt;
-	width: 10pt;
+	height: 40pt;
+	width: 20pt;
 
 	padding: 0pt;
 	margin: 0pt;
-	margin-left:5pt;
-	margin-right:5pt;
-	line-height: 30pt;
+	margin-bottom: -6pt;
+	margin-top: -6pt;
+	margin-left: 2pt;
+	margin-right: 2pt;
 }
 #ribbonPreview .left{
-	transform: skew(34deg);
-
+	-webkit-clip-path: polygon(0 40%, 100% 0, 100% 60%, 0% 100%);
+	clip-path: polygon(0 40%, 100% 0, 100% 60%, 0% 100%);
 }
 #ribbonPreview .right{
-	transform: skew(-34deg);
+	-webkit-clip-path: polygon(0 0, 100% 40%, 100% 100%, 0 60%);
+	clip-path: polygon(0 0, 100% 40%,100% 100%, 0 60%);
+}
+#turnInstructions tr{
+	width: 1000pt;
+	background-color:white;
+}
+#turnInstructions td{
+	display: block;
+	height: 40pt;
+	width: 1000pt;
+
+	padding: 0pt;
+	margin: 0pt;
+	margin-bottom: -6pt;
+	margin-top: -6pt;
 }
