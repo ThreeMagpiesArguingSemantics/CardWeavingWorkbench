@@ -13,6 +13,29 @@ body{
 }
 body * {
 }
+
+input{
+	border: none;
+	text-align: left;
+	text-decoration: none;
+	color: white;
+	padding: 4pt 8pt;
+	font-size: 12pt;
+	margin: 4pt;
+	background-color: grey;
+}
+select{
+	border: none;
+	text-align: left;
+	text-decoration: none;
+	color: white;
+	padding: 4pt 8pt;
+	font-size: 12pt;
+	margin: 4pt;
+	cursor: pointer;
+	-webkit-appearance: none;
+}
+
 #settings_panel{
 	display: flex;
 	flex-direction: row;
@@ -49,11 +72,15 @@ body * {
 	height: 30pt;
 	background-color: grey;
 	width: 24pt;
+	text-align: center;
+	font-size: 15pt;
+	cursor: pointer;
 }
 #card_settings .section{
 	display: none;
 	height: 200pt;
 	background-color: white;
+	overflow-y: scroll;
 }
 #card_settings .active{
 	display: block;
