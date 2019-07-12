@@ -4,18 +4,14 @@
 	 <link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body onload="setup()">
-	<div id=pattern_panel>
-		<table id="ribbonPreview" onclick="swapTwist(event)">
-
-		</table>
-		<table id="turnInstructions">
-			<tr></tr>
-		</table>
+	<div id=pattern>
+		<table id="ribbonPreview" onclick="swapTwist(event)"></table>
+		<table id="turnInstructions"></table>
 	</div>
-	<div id="settings_panel">
-
-		<div class="tile" id="card_settings">
-		</div>
-
+	<div id="settings">
+		<div class="tile" id="cardSettings"><h1>cards</h1></div>
+		<div class="tile" id="formatSettings"></div>
+		<div class="tile" id="colorSettings"></div>
+		<div class="tile" id="saveAndLoadSettings"></div>
 </body>
 </html>
