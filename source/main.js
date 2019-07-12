@@ -195,13 +195,9 @@ var CardWeaver = (function(){
 		}
 	}
 	Card.prototype.setThreading = function(threading){
-		if(!threading || !(threading==="z" || threading==="s")) return;
-		if(!this.threading){
-			this.threading = threading;
-			return;
-		}
+		if (!threading || !(threading==="z" || threading==="s")) return;
 		if (this.threading !== threading){
-			this.strings.reverse();
+			this.threading = threading;
 		}
 	}
 	Card.prototype.isValid = function(){
@@ -329,11 +325,17 @@ function updatecardSettings(){
 	var parrent = document.getElementById("cardSettings");
 	var sections = parrent.getElementsByClassName("section");
 
-	for(var k=0; k<ribbon.width; k++){
-		let section = sections[k];
+	var options = [];
+	for(string of ribbon.strings){
+		options.push(string.name);
+	}
+
+	for(var k=0;k<ribbon.width;k++){
+		let card = ribbon.cards[k];
+		let index = k;
+		let section = sections[k]
 		section.innerHTML="";
 
-		let card = ribbon.cards[k];
 		let holes_selector = drawNumberInput(section,"card_holes", 2, card.holes)
 		holes_selector.onchange = function(){
 			card.setHoles(holes_selector.valueAsNumber); // NOTE needs to validate
@@ -341,16 +343,16 @@ function updatecardSettings(){
 			updateRibbon();
 		};
 
-		// strings
-		var options = [];
-		for(string of ribbon.strings){
-			options.push(string.name);
+		let threading = drawSelectInput(section,"threading",["z","s"],card.threading==="z"?0:1);
+		threading.onchange=function(){
+			card.setThreading(threading.options[threading.selectedIndex].text);
+			updatecardSettings();
+			updateRibbon();
 		}
 
 		for(var k2=0; k2<card.holes; k2++){
-				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k2])
+				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k])
 				strings.style.backgroundColor = ribbon.strings[card.strings[k2]].color;
-				let index = k2;
 				strings.onchange=function(){
 					strings.style.backgroundColor = ribbon.strings[strings.selectedIndex].color;
 					card.setString(index,strings.selectedIndex);
