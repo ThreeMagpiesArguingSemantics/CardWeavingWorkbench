@@ -97,6 +97,7 @@ select{
 	overflow-y: scroll;
 	flex-direction: row;
 	flex-wrap: nowrap;
+	word-wrap: nowrap;
 	justify-content:left;
 }
 #ribbonPreview{
@@ -133,16 +134,20 @@ select{
 
 #turnInstructions tr{
 	background-color:white;
+	word-wrap: nowrap;
 }
 #turnInstructions td{
-	display: block;
+	display: inline-block;
 	height: 40pt;
-	width: 10pt;
+
+	line-height: 40pt;
 
 	padding: 0pt;
+	padding-right: 100pt;
 	margin: 0pt;
 	margin-bottom: -6pt;
 	margin-top: -6pt;
+	word-wrap: nowrap;
 }
 #turnInstructions .grey{
 	background-color: grey;

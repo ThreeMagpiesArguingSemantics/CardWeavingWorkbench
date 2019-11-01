@@ -194,6 +194,7 @@ var CardWeaver = (function(){
 		if (this.threading !== threading){
 			this.threading = threading;
 		}
+		updateTurnInstructions();
 	}
 
 	var String = function(){
@@ -254,13 +255,14 @@ function drawRibbon(){
 	var turnInstructions = document.getElementById("turnInstructions");
 	ribbonPreview.innerHTML = "";
 	turnInstructions.innerHTML = "";
-	for (var k=0; k<length; k++){
+	for (var row=0; row<length; row++){
 		var row_preview = ribbonPreview.insertRow(0);
-		for (var k2 = 0; k2<ribbon.width; k2++){
-			row_preview.insertCell(k2);
+		for (var column = 0; column<ribbon.width; column++){
+			row_preview.insertCell(column);
 		}
 		var row_instructions = turnInstructions.insertRow(0);
 		row_instructions.insertCell(0);
+		row_instructions.insertCell(1);
 	}
 	updateRibbon();
 }
@@ -279,7 +281,7 @@ function updateRibbon(){
 			rows_preview[inv_k].className="grey";
 		}
 
-		var cells_preview =  rows_preview[inv_k].getElementsByTagName("td")
+		var cells_preview = rows_preview[inv_k].getElementsByTagName("td")
 		for (var k2 = 0; k2<ribbon.width; k2++){
 			var cell_preview = cells_preview[k2]
 			cell_preview.style.backgroundColor = ribbon.strings[strings[k2]].color;
@@ -291,9 +293,30 @@ function updateRibbon(){
 			}
 		}
 	}
+	updateTurnInstructions();
 
 	var parrent = document.getElementById("pattern");
 	parrent.scrollTop = parrent.scrollHeight //NOTE
+}
+
+function updateTurnInstructions(){
+		var length = ribbon.length*3
+
+		var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
+		for (var row=0; row<rows_instructions.length; row++){
+				var twists = ribbon.getTopRowTwists(row);
+				var cw = [];
+				var ccw = [];
+				for(column=0;column<twists.length;column++){
+					i = twists[column];
+					if (ribbon.cards[column].threading=="z") i*=-1;
+					if (i>0)cw.push(column);
+					else ccw.push(column);
+				}
+
+				rows_instructions[row].getElementsByTagName('td')[0].innerHTML = "f: "+JSON.stringify(cw);
+				rows_instructions[row].getElementsByTagName('td')[1].innerHTML = "b: "+JSON.stringify(ccw);
+		}
 }
 
 function drawcardSettings(){
@@ -378,16 +401,16 @@ function drawSaveAndLoadSettings(){
 		w.appendChild(e);
 		parrent.appendChild(w);
 
-		let save = drawButtonInput(parrent, "save")
+		let save = drawButtonInput(parrent, "get_savedata")
 		save.onclick = function(){
 				b = document.getElementById("saveloadbox");
-				b.innerHTML = ribbon.save();
+				b.value = ribbon.save();
 		};
 
-		let load = drawButtonInput(parrent, "load")
+		let load = drawButtonInput(parrent, "load_savedata")
 		load.onclick = function(){
 				b = document.getElementById("saveloadbox");
-				if(!ribbon.load(b.innerHTML)) alert("unable to load save data");
+				if(!ribbon.load(b.value)) alert("unable to load save data");
 		};
 }
 
