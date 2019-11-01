@@ -3,8 +3,9 @@ var CardWeaver = (function(){
 		this.width = 0;
 		this.length = 0;
 		this.cards = [];
-		this.twists = [];
 		this.strings = [];
+
+		this.twists = [];
 	}
 	Ribbon.prototype.newString = function(){
 		var string = new String();
@@ -14,6 +15,7 @@ var CardWeaver = (function(){
 	Ribbon.prototype.removeString = function(index){
 		return this.strings.splice(index,1);
 	}
+
 	Ribbon.prototype.setWidth = function(width){
 		if (this.cards.length<width){
 			for(var k=width-this.cards.length; k>0; k--){
@@ -43,6 +45,10 @@ var CardWeaver = (function(){
 			}
 		}
 		this.length = length
+	}
+
+	Ribbon.prototype.getCard = function(column){
+		return this.cards[column];
 	}
 	Ribbon.prototype.newCard = function(index){
 		var card = new Card();
@@ -75,64 +81,46 @@ var CardWeaver = (function(){
 		this.width--;
 		return card;
 	}
+
 	Ribbon.prototype.setTwist = function(row, column, value){
 		this.twists[column][row] = value;
 	}
 	Ribbon.prototype.swapTwist = function(row, column){
 		this.twists[column][row]*=-1;
 	}
-	Ribbon.prototype.getCard = function(column){
-		return this.cards[column];
-	}
+
 	Ribbon.prototype.getTopRowTwists = function(row){
-		var values = [];
-		var value;
+		var values = [this.width];
 		for(column=0; column<this.width; column++){
-			if (this.cards[column].isValid()){
-				value = this.twists[column][loopValue(row,this.length-1)];
-				value*=-1;
-			}
-			else{
-				value = false;
-			}
-			values.push(value);
+			values[column] = this.twists[column][loopValue(row,this.length-1)];
 		}
 		return values;
 	}
 	Ribbon.prototype.getRowCardPositions = function(row){
-		var values = [];
-		var value;
+		var values = [this.width];
 		for(column=0; column<this.width; column++){
-			if (this.cards[column].isValid()){
-				value = 0;
-				for(k2=0;k2<row; k2++){
-					value+=this.twists[column][loopValue(k2,this.length-1)];
-				}
-				value = loopValue(value,this.cards[column].holes,1);
+			v = 0;
+			for(k=0;k<=row; k++){
+				v += this.twists[column][loopValue(k,this.length-1)];
 			}
-			else{
-				value = false;
-			}
-			values.push(value);
+
+			values[column] = loopValue(v,this.cards[column].holes,1);
 		}
 		return values;
 	}
 	Ribbon.prototype.getTopRowStrings = function(row){
 		var positions = this.getRowCardPositions(row);
 		var twists = this.getTopRowTwists(row);
-		var values = [];
-		for(var k = 0; k<this.width; k++){
-			if (positions[k]===false){
-				values.push(false);
-				continue;
-			}
-			var index = positions[k];
-			if (twists[k]>0) index--;
-			index = loopValue(index, this.cards[k].holes-1)
-			values.push(this.cards[k].strings[index])
+		var values = [this.width];
+		for(var column = 0; column<this.width; column++){
+			var i = positions[column];
+			if (twists[column]>0) i--;
+			i = loopValue(i, this.cards[column].holes-1)
+			values[column] = this.cards[column].strings[i]
 		}
 		return values;
 	}
+
 	Ribbon.prototype.save = function(){
 		var json = JSON.stringify(this);
 		return json;
@@ -199,17 +187,6 @@ var CardWeaver = (function(){
 		if (this.threading !== threading){
 			this.threading = threading;
 		}
-	}
-	Card.prototype.isValid = function(){
-		if (!this.holes) return false;
-		if (this.holes<=1) return false;
-		if (this.holes !== this.strings.length) return false;
-		for (var string of this.strings){
-			if (string>ribbon.strings.length) return false;
-		}
-		if (!this.threading) return false;
-
-		return true;
 	}
 
 	var String = function(){
