@@ -126,12 +126,17 @@ var CardWeaver = (function(){
 		return json;
 	}
 	Ribbon.prototype.load = function(json){
+		try{
+			var data = JSON.parse(json);
+		}
+		catch(e){
+			return false;
+		}
+
 		this.width = 0;
 		this.cards = [];
 		this.twists = [];
 		this.strings = [];
-
-		var data = JSON.parse(json);
 
 		for(var string of data.strings){
 			var s = this.newString();
@@ -150,6 +155,8 @@ var CardWeaver = (function(){
 
 		this.twists = data.twists;
 
+		drawAll();
+		return true;
 	}
 
 	var Card = function(){
@@ -232,9 +239,13 @@ function swapTwist(e){
 
 function setup(){
 	ribbon.load('{"width":8,"length":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,1,1,1,1]],"strings":[{"color":"blue","name":"blue_silk"},{"color":"red","name":"red_silk"},{"color":"grey","name":"silver_silk"}]}')
+}
+function drawAll(){
+	document.getElementById("settings").innerHTML = '<div class="tile" id="cardSettings"></div><div class="tile" id="formatSettings"></div><div class="tile" id="colorSettings"></div><div class="tile" id="saveAndLoadSettings"></div>';
 	drawRibbon();
-	drawcardSettings()
-	drawFormatSettings()
+	drawcardSettings();
+	drawFormatSettings();
+	drawSaveAndLoadSettings();
 }
 
 function drawRibbon(){
@@ -295,7 +306,6 @@ function drawcardSettings(){
 	}
 
 	drawSectionTabs(parrent, tabs, 0);
-
 	updatecardSettings();
 }
 function updatecardSettings(){
@@ -356,6 +366,30 @@ function drawFormatSettings(){
 			drawRibbon();
 		};
 }
+function drawSaveAndLoadSettings(){
+		var parrent = document.getElementById("saveAndLoadSettings");
+
+		var w = document.createElement("div")
+		w.className="inputWrap"
+		let e = document.createElement("textarea")
+		e.rows = 10;
+		e.cols = 25;
+		e.id = "saveloadbox"
+		w.appendChild(e);
+		parrent.appendChild(w);
+
+		let save = drawButtonInput(parrent, "save")
+		save.onclick = function(){
+				b = document.getElementById("saveloadbox");
+				b.innerHTML = ribbon.save();
+		};
+
+		let load = drawButtonInput(parrent, "load")
+		load.onclick = function(){
+				b = document.getElementById("saveloadbox");
+				if(!ribbon.load(b.innerHTML)) alert("unable to load save data");
+		};
+}
 
 function drawSectionTabs(parrent, tabNames, selected){
 
@@ -412,7 +446,6 @@ function drawSectionTabs(parrent, tabNames, selected){
 
 	return sections;
 }
-
 function drawSelectInput(parrent, name,options,selected){
 	var w = document.createElement("div")
 	w.className="inputWrap"
@@ -433,7 +466,6 @@ function drawSelectInput(parrent, name,options,selected){
 	parrent.appendChild(w);
 	return s;
 }
-
 function drawNumberInput(parrent, name,minValue,startValue){
 	var w = document.createElement("div")
 	w.className="inputWrap"
@@ -446,6 +478,16 @@ function drawNumberInput(parrent, name,minValue,startValue){
 	e.min = minValue;
 	e.id=name;
 	e.value = startValue;
+	w.appendChild(e);
+	parrent.appendChild(w);
+	return e
+}
+function drawButtonInput(parrent, name){
+	var w = document.createElement("div")
+	w.className="inputWrap"
+	var e = document.createElement("button");
+	e.innerHTML = name;
+	e.id=name;
 	w.appendChild(e);
 	parrent.appendChild(w);
 	return e
