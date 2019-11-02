@@ -139,6 +139,10 @@ select{
 	clip-path: polygon(0 50%, 100% 0%,100% 100%);
 }
 #ribbonPreview .grey{
+	opacity: 1;
+	pointer-events: none;
+}
+#ribbonPreview:hover .grey{
 	opacity: 0.4;
 	pointer-events: none;
 }

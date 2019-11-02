@@ -348,7 +348,7 @@ function updateTurnInstructions(){
 function formatTurns(turns, max){
 	var str = "";
 
-	var devider = " ";
+	var devider = "&nbsp&nbsp";
 
 	if (turns.length) str+=turns[0];
 	for (var k=1;k<turns.length;k++){
@@ -362,7 +362,7 @@ function formatTurns(turns, max){
 		}
 		str+=devider;
 		str+=turns[k];
-		devider = " "
+		devider = "&nbsp&nbsp"
 	}
 	return str;
 }
