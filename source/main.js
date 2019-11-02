@@ -15,6 +15,21 @@ var CardWeaver = (function(){
 	Ribbon.prototype.removeString = function(index){
 		return this.strings.splice(index,1);
 	}
+	Ribbon.prototype.setStingCount = function(count){
+		if (count>this.strings.length){
+			for (var k=this.strings.length;k<count;k++){
+					s=this.newString();
+					s.name = "string "+k;
+			}
+			return;
+		}
+		else if (count<this.strings.length){
+			for (var k=this.strings.length;k>count;k--){
+					this.removeString(this.strings.length-1)
+			}
+			return;
+		}
+	}
 
 	Ribbon.prototype.setWidth = function(width){
 		if (this.cards.length<width){
@@ -199,7 +214,7 @@ var CardWeaver = (function(){
 	}
 
 	var String = function(){
-		this.color;
+		this.color = "#FFFFFF";
 		this.name;
 	}
 	String.prototype.setColor = function(hex){
@@ -360,7 +375,7 @@ function updatecardSettings(){
 		}
 
 		for(var k2=0; k2<card.holes; k2++){
-				hole = k2;
+				let hole = k2;
 				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k])
 				strings.style.backgroundColor = ribbon.strings[card.strings[k2]].color;
 				strings.onchange=function(){
@@ -419,7 +434,9 @@ function drawStringSettings(){
 
 	let stringCount = drawNumberInput(parrent, "string_count", 1,ribbon.strings.length);
 	stringCount.onchange=function(){
+			ribbon.setStingCount(stringCount.value);
 			drawStringSettings();
+			drawAll();
 	}
 
 	var options = [];
