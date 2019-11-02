@@ -274,6 +274,7 @@ function drawRibbon(){
 	var b_turnInstructions = document.getElementById("backwards_turnInstructions");
 	ribbonPreview.innerHTML = "";
 	f_turnInstructions.innerHTML = "";
+	b_turnInstructions.innerHTML = "";
 	for (var row=0; row<length; row++){
 		var row_preview = ribbonPreview.insertRow(0);
 		for (var column = 0; column<ribbon.width; column++){
@@ -285,6 +286,7 @@ function drawRibbon(){
 		row_instructions.insertCell(0);
 	}
 	updateRibbon();
+	updateTurnInstructions();
 }
 function updateRibbon(){
 	var f_rows_instructions = document.getElementById("forwards_turnInstructions").getElementsByTagName("tr");
@@ -297,7 +299,7 @@ function updateRibbon(){
 		var twists = ribbon.getTopRowTwists(i);
 		var twists2 = ribbon.getTopRowTwists(i+1);
 
-		if (ribbon.length-1<i || (ribbon.length-Math.floor(ribbon.length/2))>k){
+		if (0>i || ribbon.length-1<i){
 			f_rows_instructions[inv_k].className="grey";
 			b_rows_instructions[inv_k].className="grey";
 			rows_preview[inv_k].className="grey";
@@ -337,12 +339,12 @@ function updateTurnInstructions(){
 					else ccw.push(column);
 				}
 
-				f_rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = formatTurns(cw);
-				b_rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = formatTurns(ccw);
+				f_rows_instructions[row+Math.floor(ribbon.length/2+0.5)].getElementsByTagName('td')[0].innerHTML = formatTurns(cw);
+				b_rows_instructions[row+Math.floor(ribbon.length/2+0.5)].getElementsByTagName('td')[0].innerHTML = formatTurns(ccw);
 		}
 		if (ribbon.length){
-			f_rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[0].innerHTML="forward";
-			b_rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[0].innerHTML="back";
+			f_rows_instructions[Math.floor(ribbon.length/2+0.5)-1].getElementsByTagName('td')[0].innerHTML="forward";
+			b_rows_instructions[Math.floor(ribbon.length/2+0.5)-1].getElementsByTagName('td')[0].innerHTML="back";
 		}
 }
 function formatTurns(turns, max){
@@ -350,7 +352,7 @@ function formatTurns(turns, max){
 
 	var devider = "&nbsp&nbsp";
 
-	if (turns.length) str+=turns[0];
+	if (turns.length) str+=turns[0]+1;
 	for (var k=1;k<turns.length;k++){
 
 		if (turns[k-1]+1==turns[k]){
@@ -361,7 +363,7 @@ function formatTurns(turns, max){
 			}
 		}
 		str+=devider;
-		str+=turns[k];
+		str+=turns[k]+1;
 		devider = "&nbsp&nbsp"
 	}
 	return str;
