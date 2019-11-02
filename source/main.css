@@ -1,14 +1,8 @@
 body{
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content:center;
-	height: 100%;
-
 	padding: 0pt;
 	margin: 0pt;
 
-	background-color:#607D8B;
+	background-color:black;
 	font-family: sans-serif;
 }
 body * {''
@@ -19,56 +13,70 @@ input{
 	border: none;
 	text-align: left;
 	text-decoration: none;
+
 	padding: 4pt 8pt;
 	font-size: 12pt;
 	margin: 4pt;
 	width:60pt;
+	cursor: pointer;
+}
+button{
+	border: none;
+	text-align: left;
+	text-decoration: none;
+
+	padding: 4pt 8pt;
+	font-size: 12pt;
+	margin: 4pt;
+	width:60pt;
+	cursor: pointer;
 }
 select{
 	border: none;
 	text-align: left;
 	text-decoration: none;
-	color: black;
+
 	padding: 4pt 8pt;
 	font-size: 12pt;
 	margin: 4pt;
-	cursor: pointer;
-	-webkit-appearance: none;
 	width:60pt;
+	cursor: pointer;
+
+	-webkit-appearance: none;
+
 }
 
 #settings{
-	display: flex;
-	flex-direction: column;
-	padding-bottom: 5pt;
-	background-color: #bdbdbd;
-	width:200pt;
-
+	position: fixed;
+	right: 0pt;
+	top: 0pt;
+	height: 100%;
 	z-index:10;
+	overflow-y: auto;
+	background-color: grey;
 }
 #settings .tile{
 	display:block;
 	background: #f5f5f5;
 	margin: 5pt;
-	margin-bottom: 0pt;
-}
-#settings .tile h1{
-	line-height: 6pt;
-	padding: 0pt;
-	font-size: 20pt;
-	font-weight: normal;
+	padding-top: 2pt;
+	padding-bottom: 2pt;
 }
 #settings .inputWrap{
 	display: block;
 	margin: 5pt;
-	padding-left: 8pt;
 	border: 1px solid black;
+}
+#settings Label{
+	margin-left: 5pt;
 }
 #settings .tile ul{
 	display: table;
 	padding: 0pt;
 	margin: 0pt;
+	margin-top: -2pt;
 	width:100%;
+	cursor: pointer;
 }
 #settings .tile li{
 	display: table-cell;
@@ -78,30 +86,25 @@ select{
 	line-height: 25pt;
 	color: white;
 }
+#settings .tile ul .active{
+	display: table-cell;
+	background-color: #f5f5f5;
+	color: black;
+}
 #settings .tile .section{
 	display: none;
 }
 #settings .tile .active{
 	display: block;
 }
-#cardSettings ul .active{
-	display: table-cell;
-	background-color: #f5f5f5;
-	color: black;
-}
 
 
 #pattern{
-	flex-grow:1;
-	display: flex;
-	overflow-y: scroll;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	word-wrap: nowrap;
-	justify-content:left;
 }
 #ribbonPreview{
 	background-color: black;
+	display: inline;
+	margin: 0pt;
 }
 #ribbonPreview td{
 	display: inline-block;
@@ -132,23 +135,24 @@ select{
 	pointer-events: none;
 }
 
+#turnInstructions{
+	display: inline;
+}
 #turnInstructions tr{
-	background-color:white;
+	color: white;
 	word-wrap: nowrap;
 }
 #turnInstructions td{
 	display: inline-block;
 	height: 40pt;
-
 	line-height: 40pt;
-
 	padding: 0pt;
-	padding-right: 100pt;
 	margin: 0pt;
 	margin-bottom: -6pt;
 	margin-top: -6pt;
 	word-wrap: nowrap;
 }
-#turnInstructions .grey{
-	background-color: grey;
+#turnInstructions td:nth-child(2){
+	padding-left: 100pt;
+
 }

@@ -90,25 +90,27 @@ var CardWeaver = (function(){
 	}
 
 	Ribbon.prototype.getTopRowTwists = function(row){
+		row = loopValue(row,ribbon.length-1,0);
 		var values = [this.width];
 		for(column=0; column<this.width; column++){
-			values[column] = this.twists[column][loopValue(row,this.length-1)];
+			values[column] = this.twists[column][row];
 		}
 		return values;
 	}
 	Ribbon.prototype.getRowCardPositions = function(row){
+		row = loopValue(row,ribbon.length-1,0);
 		var values = [this.width];
 		for(column=0; column<this.width; column++){
 			v = 0;
 			for(k=0;k<=row; k++){
-				v += this.twists[column][loopValue(k,this.length-1)];
+				v += this.twists[column][row];
 			}
-
 			values[column] = loopValue(v,this.cards[column].holes,1);
 		}
 		return values;
 	}
 	Ribbon.prototype.getTopRowStrings = function(row){
+		row = loopValue(row,ribbon.length-1,0);
 		var positions = this.getRowCardPositions(row);
 		var twists = this.getTopRowTwists(row);
 		var values = [this.width];
@@ -181,7 +183,6 @@ var CardWeaver = (function(){
 				this.setString(k,0);
 			}
 		}
-
 	}
 	Card.prototype.setStrings = function(){
 		this.strings = [];
@@ -230,6 +231,7 @@ function swapTwist(e){
 		column = element.cellIndex;
 		row = element.parentNode.rowIndex;
 		row = document.getElementById("ribbonPreview").getElementsByTagName("tr").length-1 - row;
+		row -= Math.abs(ribbon.length/2);
 	}
 	else return;
 
@@ -239,18 +241,19 @@ function swapTwist(e){
 }
 
 function setup(){
-	ribbon.load('{"width":8,"length":8,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"twists":[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[-1,-1,-1,-1,1,1,1,1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,-1,-1,-1,-1],[1,1,1,1,1,1,1,1]],"strings":[{"color":"blue","name":"blue_silk"},{"color":"red","name":"red_silk"},{"color":"grey","name":"silver_silk"}]}')
+	ribbon.load('{"width":8,"length":12,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"strings":[{"color":"#003bff","name":"Blue"},{"color":"#ca00ff","name":"purple"},{"color":"#cdfffa","name":"silver"}],"twists":[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[1,-1,-1,1,1,-1,-1,-1,-1,1,1,1],[1,-1,-1,1,1,-1,-1,-1,-1,1,1,1],[-1,1,1,-1,-1,1,-1,-1,-1,1,1,1],[1,1,1,-1,-1,-1,1,-1,-1,1,1,-1],[1,1,1,-1,-1,-1,-1,1,1,-1,-1,1],[1,1,1,-1,-1,-1,-1,1,1,-1,-1,1],[1,1,1,1,1,1,1,1,1,1,1,1]]}')
 }
 function drawAll(){
-	document.getElementById("settings").innerHTML = '<div class="tile" id="cardSettings"></div><div class="tile" id="formatSettings"></div><div class="tile" id="colorSettings"></div><div class="tile" id="saveAndLoadSettings"></div>';
+	document.getElementById("settings").innerHTML = '<div class="tile" id="cardSettings"></div><div class="tile" id="formatSettings"></div><div class="tile" id="stringSettings"></div><div class="tile" id="saveAndLoadSettings"></div>';
 	drawRibbon();
 	drawcardSettings();
 	drawFormatSettings();
+	drawStringSettings();
 	drawSaveAndLoadSettings();
 }
 
 function drawRibbon(){
-	var length = ribbon.length*3
+	var length = ribbon.length*2
 	var ribbonPreview = document.getElementById("ribbonPreview");
 	var turnInstructions = document.getElementById("turnInstructions");
 	ribbonPreview.innerHTML = "";
@@ -271,12 +274,11 @@ function updateRibbon(){
 	var rows_preview = document.getElementById("ribbonPreview").getElementsByTagName("tr");
 	for (var k=0; k<rows_preview.length; k++){
 		var inv_k = rows_preview.length-1-k;
-		var strings = ribbon.getTopRowStrings(k);
-		var twists = ribbon.getTopRowTwists(k);
-		// Instructions
+		var i = k-Math.abs(ribbon.length/2);
+		var strings = ribbon.getTopRowStrings(i);
+		var twists = ribbon.getTopRowTwists(i);
 
-
-		if (ribbon.length-1<k){
+		if (ribbon.length-1<i || (ribbon.length-Math.abs(ribbon.length/2))>k){
 			rows_instructions[inv_k].className="grey";
 			rows_preview[inv_k].className="grey";
 		}
@@ -295,16 +297,13 @@ function updateRibbon(){
 	}
 	updateTurnInstructions();
 
-	var parrent = document.getElementById("pattern");
-	parrent.scrollTop = parrent.scrollHeight //NOTE
+	var parrent = document.body;
+	parrent.scrollTop = parrent.scrollHeight;
 }
-
 function updateTurnInstructions(){
-		var length = ribbon.length*3
-
 		var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
-		for (var row=0; row<rows_instructions.length; row++){
-				var twists = ribbon.getTopRowTwists(row);
+		for (var row=0; row<ribbon.length; row++){
+				var twists = ribbon.getTopRowTwists(rows_instructions.length-row-1);
 				var cw = [];
 				var ccw = [];
 				for(column=0;column<twists.length;column++){
@@ -314,8 +313,8 @@ function updateTurnInstructions(){
 					else ccw.push(column);
 				}
 
-				rows_instructions[row].getElementsByTagName('td')[0].innerHTML = "f: "+JSON.stringify(cw);
-				rows_instructions[row].getElementsByTagName('td')[1].innerHTML = "b: "+JSON.stringify(ccw);
+				rows_instructions[row+Math.abs(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = "f: "+JSON.stringify(cw);
+				rows_instructions[row+Math.abs(ribbon.length/2)].getElementsByTagName('td')[1].innerHTML = "b: "+JSON.stringify(ccw);
 		}
 }
 
@@ -361,11 +360,12 @@ function updatecardSettings(){
 		}
 
 		for(var k2=0; k2<card.holes; k2++){
+				hole = k2;
 				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k])
 				strings.style.backgroundColor = ribbon.strings[card.strings[k2]].color;
 				strings.onchange=function(){
 					strings.style.backgroundColor = ribbon.strings[strings.selectedIndex].color;
-					card.setString(index,strings.selectedIndex);
+					card.setString(hole,strings.selectedIndex);
 					updateRibbon();
 				}
 		}
@@ -412,6 +412,44 @@ function drawSaveAndLoadSettings(){
 				b = document.getElementById("saveloadbox");
 				if(!ribbon.load(b.value)) alert("unable to load save data");
 		};
+}
+function drawStringSettings(){
+	var parrent = document.getElementById("stringSettings");
+	parrent.innerHTML = "";
+
+	let stringCount = drawNumberInput(parrent, "string_count", 1,ribbon.strings.length);
+	stringCount.onchange=function(){
+			drawStringSettings();
+	}
+
+	var options = [];
+	for(string of ribbon.strings){
+		options.push(string.name);
+	}
+
+	let strings = drawSelectInput(parrent,"string",options,0)
+	var w = document.createElement("div")
+	w.className="inputWrap"
+	parrent.appendChild(w);
+	strings.onchange=function(){
+		strings.style.backgroundColor = ribbon.strings[strings.selectedIndex].color;
+		w.innerHTML="";
+
+		name = drawTextInput(w,"name",ribbon.strings[strings.selectedIndex].name)
+		color = drawColorInput(w,"color",ribbon.strings[strings.selectedIndex].color)
+
+
+		update = drawButtonInput(w,"update");
+		update.onclick = function(){
+			ribbon.strings[strings.selectedIndex].name = document.getElementById("name").value;
+			ribbon.strings[strings.selectedIndex].color = document.getElementById("color").value;
+			drawAll();
+		}
+
+
+	}
+	strings.onchange();
+
 }
 
 function drawSectionTabs(parrent, tabNames, selected){
@@ -508,9 +546,43 @@ function drawNumberInput(parrent, name,minValue,startValue){
 function drawButtonInput(parrent, name){
 	var w = document.createElement("div")
 	w.className="inputWrap"
+	var l = document.createElement("label");
+	l.htmlFor=name;
+	l.innerHTML=name+":";
+	w.appendChild(l)
 	var e = document.createElement("button");
-	e.innerHTML = name;
+	e.innerHTML = "button";
 	e.id=name;
+	w.appendChild(e);
+	parrent.appendChild(w);
+	return e;
+}
+function drawTextInput(parrent, name, startValue){
+	var w = document.createElement("div")
+	w.className="inputWrap"
+	var l = document.createElement("label");
+	l.htmlFor=name;
+	l.innerHTML=name+":";
+	w.appendChild(l)
+	var e = document.createElement("input");
+	e.type = "text";
+	e.id=name;
+	e.value = startValue;
+	w.appendChild(e);
+	parrent.appendChild(w);
+	return e
+}
+function drawColorInput(parrent, name, startValue){
+	var w = document.createElement("div")
+	w.className="inputWrap"
+	var l = document.createElement("label");
+	l.htmlFor=name;
+	l.innerHTML=name+":";
+	w.appendChild(l)
+	var e = document.createElement("input");
+	e.type = "color";
+	e.id=name;
+	e.value = startValue;
 	w.appendChild(e);
 	parrent.appendChild(w);
 	return e
