@@ -143,15 +143,15 @@ select{
 	pointer-events: none;
 }
 
-#turnInstructions{
+.turnInstructions{
 	display: inline;
 }
-#turnInstructions tr{
+.turnInstructions tr{
 	color: white;
 	word-wrap: nowrap;
 
 }
-#turnInstructions td{
+.turnInstructions td{
 	display: inline-block;
 	height: 40pt;
 	line-height: 40pt;
@@ -161,7 +161,6 @@ select{
 	margin-top: -9pt;
 	word-wrap: nowrap;
 }
-#turnInstructions td:nth-child(2){
-	padding-left: 100pt;
-
+#backwards_turnInstructions{
+	padding-left: 50pt;
 }

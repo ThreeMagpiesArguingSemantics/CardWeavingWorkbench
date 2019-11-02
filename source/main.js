@@ -270,22 +270,25 @@ function drawAll(){
 function drawRibbon(){
 	var length = ribbon.length*2
 	var ribbonPreview = document.getElementById("ribbonPreview");
-	var turnInstructions = document.getElementById("turnInstructions");
+	var f_turnInstructions = document.getElementById("forwards_turnInstructions");
+	var b_turnInstructions = document.getElementById("backwards_turnInstructions");
 	ribbonPreview.innerHTML = "";
-	turnInstructions.innerHTML = "";
+	f_turnInstructions.innerHTML = "";
 	for (var row=0; row<length; row++){
 		var row_preview = ribbonPreview.insertRow(0);
 		for (var column = 0; column<ribbon.width; column++){
 			row_preview.insertCell(column);
 		}
-		var row_instructions = turnInstructions.insertRow(0);
+		var row_instructions = f_turnInstructions.insertRow(0);
 		row_instructions.insertCell(0);
-		row_instructions.insertCell(1);
+		var row_instructions = b_turnInstructions.insertRow(0);
+		row_instructions.insertCell(0);
 	}
 	updateRibbon();
 }
 function updateRibbon(){
-	var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
+	var f_rows_instructions = document.getElementById("forwards_turnInstructions").getElementsByTagName("tr");
+	var b_rows_instructions = document.getElementById("backwards_turnInstructions").getElementsByTagName("tr");
 	var rows_preview = document.getElementById("ribbonPreview").getElementsByTagName("tr");
 	for (var k=0; k<rows_preview.length; k++){
 		var inv_k = rows_preview.length-1-k;
@@ -295,7 +298,8 @@ function updateRibbon(){
 		var twists2 = ribbon.getTopRowTwists(i+1);
 
 		if (ribbon.length-1<i || (ribbon.length-Math.floor(ribbon.length/2))>k){
-			rows_instructions[inv_k].className="grey";
+			f_rows_instructions[inv_k].className="grey";
+			b_rows_instructions[inv_k].className="grey";
 			rows_preview[inv_k].className="grey";
 		}
 
@@ -320,9 +324,10 @@ function updateRibbon(){
 	parrent.scrollTop = parrent.scrollHeight;
 }
 function updateTurnInstructions(){
-		var rows_instructions = document.getElementById("turnInstructions").getElementsByTagName("tr");
+		var f_rows_instructions = document.getElementById("forwards_turnInstructions").getElementsByTagName("tr");
+		var b_rows_instructions = document.getElementById("backwards_turnInstructions").getElementsByTagName("tr");
 		for (var row=0; row<ribbon.length; row++){
-				var twists = ribbon.getTopRowTwists(rows_instructions.length-row-1);
+				var twists = ribbon.getTopRowTwists(f_rows_instructions.length-row-1);
 				var cw = [];
 				var ccw = [];
 				for(column=0;column<twists.length;column++){
@@ -332,18 +337,35 @@ function updateTurnInstructions(){
 					else ccw.push(column);
 				}
 
-				rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = JSON.stringify(cw).replace("[","").replace("]","").replaceAll(","," ");
-				rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[1].innerHTML = JSON.stringify(ccw).replace("[","").replace("]","").replaceAll(","," ");
+				f_rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = formatTurns(cw);
+				b_rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = formatTurns(ccw);
 		}
 		if (ribbon.length){
-			rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[0].innerHTML="forward";
-			rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[1].innerHTML="back";
+			f_rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[0].innerHTML="forward";
+			b_rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[0].innerHTML="back";
 		}
 }
-String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
-};
+function formatTurns(turns, max){
+	var str = "";
+
+	var devider = " ";
+
+	if (turns.length) str+=turns[0];
+	for (var k=1;k<turns.length;k++){
+
+		if (turns[k-1]+1==turns[k]){
+			devider = ":";
+			if (turns[k]+1==turns[k+1]){
+
+				continue;
+			}
+		}
+		str+=devider;
+		str+=turns[k];
+		devider = " "
+	}
+	return str;
+}
 
 function drawcardSettings(){
 	var parrent = document.getElementById("cardSettings");
