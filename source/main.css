@@ -109,29 +109,37 @@ select{
 #ribbonPreview td{
 	display: inline-block;
 	height: 40pt;
-	width: 20pt;
+	width: 15pt;
 
 	padding: 0pt;
 	margin: 0pt;
-	margin-bottom: -6pt;
-	margin-top: -6pt;
-	margin-left: 2pt;
-	margin-right: 2pt;
+	margin-bottom: -9pt;
+	margin-top: -9pt;
+	margin-left: 1pt;
+	margin-right: 1pt;
 }
 #ribbonPreview td:hover{
 	background-color: white !important;
 	cursor: pointer;
 }
 #ribbonPreview .left{
-	-webkit-clip-path: polygon(0 40%, 100% 0, 100% 60%, 0% 100%);
-	clip-path: polygon(0 40%, 100% 0, 100% 60%, 0% 100%);
+	-webkit-clip-path: polygon(0 50%, 100% 0, 100% 50%, 0% 100%);
+	clip-path: polygon(0 50%, 100% 0, 100% 50%, 0% 100%);
 }
 #ribbonPreview .right{
-	-webkit-clip-path: polygon(0 0, 100% 40%, 100% 100%, 0 60%);
-	clip-path: polygon(0 0, 100% 40%,100% 100%, 0 60%);
+	-webkit-clip-path: polygon(0 0, 100% 50%, 100% 100%, 0 50%);
+	clip-path: polygon(0 0, 100% 50%,100% 100%, 0 50%);
+}
+#ribbonPreview .left_c{
+	-webkit-clip-path: polygon(0 0, 100% 50%, 0% 100%);
+	clip-path: polygon(0 0, 100% 50%, 0% 100%);
+}
+#ribbonPreview .right_c{
+	-webkit-clip-path: polygon(0 50%, 100% 0%,100% 100%);
+	clip-path: polygon(0 50%, 100% 0%,100% 100%);
 }
 #ribbonPreview .grey{
-	opacity: 0.6;
+	opacity: 0.4;
 	pointer-events: none;
 }
 
@@ -141,6 +149,7 @@ select{
 #turnInstructions tr{
 	color: white;
 	word-wrap: nowrap;
+
 }
 #turnInstructions td{
 	display: inline-block;
@@ -148,8 +157,8 @@ select{
 	line-height: 40pt;
 	padding: 0pt;
 	margin: 0pt;
-	margin-bottom: -6pt;
-	margin-top: -6pt;
+	margin-bottom: -9pt;
+	margin-top: -9pt;
 	word-wrap: nowrap;
 }
 #turnInstructions td:nth-child(2){

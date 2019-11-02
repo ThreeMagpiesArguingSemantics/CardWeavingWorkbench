@@ -292,6 +292,7 @@ function updateRibbon(){
 		var i = k-Math.abs(ribbon.length/2);
 		var strings = ribbon.getTopRowStrings(i);
 		var twists = ribbon.getTopRowTwists(i);
+		var twists2 = ribbon.getTopRowTwists(i+1);
 
 		if (ribbon.length-1<i || (ribbon.length-Math.abs(ribbon.length/2))>k){
 			rows_instructions[inv_k].className="grey";
@@ -307,6 +308,9 @@ function updateRibbon(){
 			}
 			else{
 				cell_preview.className="right";
+			}
+			if (twists2[k2]!=twists[k2]){
+				cell_preview.className+="_c";
 			}
 		}
 	}
