@@ -4,6 +4,6 @@ So i wrote my own little tool to do what i wanted. Create and view patterns tru 
 
 The code is a mess and the ui is not pretty. But it's functional and better than anything i've found. Feel free to use it however you like an if there is any issues, contact me thru github and i will try to fix it.
 
-it's written in pure javascipt, css and html without any dependencies. dwonload all the files and run the index.html file, or visit the io page here:
+it's written in pure javascipt, css and html without any dependencies. dwonload all the files and run the index.html file, or visit the io page here: https://twofigo.github.io/CardWeavingWorkbench/source/
 
 saving patterns is done tru plain human readable JSON text. Just save the text it gives and you can use the text to get the pattern back anytime.
