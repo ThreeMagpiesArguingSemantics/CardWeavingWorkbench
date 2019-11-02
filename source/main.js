@@ -246,7 +246,7 @@ function swapTwist(e){
 		column = element.cellIndex;
 		row = element.parentNode.rowIndex;
 		row = document.getElementById("ribbonPreview").getElementsByTagName("tr").length-1 - row;
-		row -= Math.abs(ribbon.length/2);
+		row -= Math.floor(ribbon.length/2);
 	}
 	else return;
 
@@ -289,12 +289,12 @@ function updateRibbon(){
 	var rows_preview = document.getElementById("ribbonPreview").getElementsByTagName("tr");
 	for (var k=0; k<rows_preview.length; k++){
 		var inv_k = rows_preview.length-1-k;
-		var i = k-Math.abs(ribbon.length/2);
+		var i = k-Math.floor(ribbon.length/2);
 		var strings = ribbon.getTopRowStrings(i);
 		var twists = ribbon.getTopRowTwists(i);
 		var twists2 = ribbon.getTopRowTwists(i+1);
 
-		if (ribbon.length-1<i || (ribbon.length-Math.abs(ribbon.length/2))>k){
+		if (ribbon.length-1<i || (ribbon.length-Math.floor(ribbon.length/2))>k){
 			rows_instructions[inv_k].className="grey";
 			rows_preview[inv_k].className="grey";
 		}
@@ -332,10 +332,18 @@ function updateTurnInstructions(){
 					else ccw.push(column);
 				}
 
-				rows_instructions[row+Math.abs(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = "f: "+JSON.stringify(cw);
-				rows_instructions[row+Math.abs(ribbon.length/2)].getElementsByTagName('td')[1].innerHTML = "b: "+JSON.stringify(ccw);
+				rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[0].innerHTML = JSON.stringify(cw).replace("[","").replace("]","").replaceAll(","," ");
+				rows_instructions[row+Math.floor(ribbon.length/2)].getElementsByTagName('td')[1].innerHTML = JSON.stringify(ccw).replace("[","").replace("]","").replaceAll(","," ");
+		}
+		if (ribbon.length){
+			rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[0].innerHTML="forward";
+			rows_instructions[Math.floor(ribbon.length/2)-1].getElementsByTagName('td')[1].innerHTML="back";
 		}
 }
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
 
 function drawcardSettings(){
 	var parrent = document.getElementById("cardSettings");
