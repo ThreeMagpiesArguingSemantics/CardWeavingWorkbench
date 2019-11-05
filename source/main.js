@@ -2,6 +2,7 @@ var CardWeaver = (function(){
 	var Ribbon = function(){
 		this.width = 0;
 		this.length = 0;
+
 		this.cards = [];
 		this.strings = [];
 
@@ -18,120 +19,103 @@ var CardWeaver = (function(){
 	Ribbon.prototype.setStingCount = function(count){
 		if (count>this.strings.length){
 			for (var k=this.strings.length;k<count;k++){
-					s=this.newString();
+					var s=this.newString();
 					s.name = "string "+k;
 			}
-			return;
 		}
 		else if (count<this.strings.length){
 			for (var k=this.strings.length;k>count;k--){
 					this.removeString(this.strings.length-1)
 			}
-			return;
 		}
-	}
-
-	Ribbon.prototype.setWidth = function(width){
-		if (this.cards.length<width){
-			for(var k=width-this.cards.length; k>0; k--){
-				var card = this.newCard();
-			}
-		}
-		else if (this.cards.length>width){
-			for(var k=this.cards.length-width; k>0; k--){
-				this.removeCard();
-			}
-		}
-	}
-	Ribbon.prototype.setLength = function(length){
-		if (length>=this.length){
-			for(var k1=0; k1<this.width; k1++){
-				for(var k2=this.twists[k1].length; k2<length; k2++){
-					this.twists[k1].push(this.cards[k1].threading=="s"?1:-1);
-				}
-
-			}
-		}
-		else if (length<this.length){
-			for(var k1=0; k1<this.width; k1++){
-				if (length<this.twists[k1].length){
-					this.twists[k1].splice(length,this.twists[k1].length-length+1);
-				}
-			}
-		}
-		this.length = length
 	}
 
 	Ribbon.prototype.getCard = function(column){
 		return this.cards[column];
 	}
 	Ribbon.prototype.newCard = function(index){
-		var card = new Card();
-		this.width++;
 		if (!index){
-			index = this.width-1;
-			this.cards.push(card);
-			this.twists.push(new Array(this.length));
-		}
-		else{
-			this.cards.splice(index, 0 , card);
-			this.twists.splice(index, 0 , new Array());
+			index = this.width;
 		}
 
-		for(var k=0;k<this.width;k++){
-				card.setString(k,0);
+		var card = new Card();
+		this.cards.splice(index, 0 , card);
+		for(var row=0;row<this.length;row++){
+				this.twists[row].splice(index, 0 , 1);
 		}
-		for(var k=0;k<this.length;k++){
-			ribbon.setTwist(k,index,1);
-		}
-		card.setThreading("s");
 
+		this.width++;
 		return card;
 	}
 	Ribbon.prototype.removeCard = function(index){
-		if (!index) index = this.width-1;
-		var card = new Card();
+		if (!index){
+			index = this.width;
+		}
+
 		this.cards.splice(index, 1);
-		this.twists.splice(index, 1);
+		for(var row=0;row<this.length;row++){
+				this.twists[row].splice(index, 1);
+		}
+
 		this.width--;
-		return card;
+	}
+
+	Ribbon.prototype.setWidth = function(width){
+		if (width>this.width){
+			for(var row=this.width; row<width; row++){
+				this.newCard();
+			}
+		}
+		else if (width<this.width){
+			for(var row=this.width; row>width; row--){
+				this.removeCard();
+			}
+		}
+	}
+	Ribbon.prototype.setLength = function(length){
+		if (length>this.length){
+			this.twists = this.twists.concat(ones(length-this.length,this.width));
+		}
+		else if (length<this.length){
+			this.twists.splice(length, this.length-length);
+		}
+		this.length = length
 	}
 
 	Ribbon.prototype.setTwist = function(row, column, value){
-		this.twists[column][row] = value;
+		this.twists[row][column] = value;
 	}
 	Ribbon.prototype.swapTwist = function(row, column){
-		this.twists[column][row]*=-1;
+		this.twists[row][column]*=-1;
 	}
 
-	Ribbon.prototype.getTopRowTwists = function(row){
+	Ribbon.prototype.getRowTwists = function(row){
 		row = loopValue(row,ribbon.length-1,0);
-		var values = [this.width];
-		for(column=0; column<this.width; column++){
-			values[column] = this.twists[column][row];
-		}
-		return values;
+		return this.twists[row];
 	}
 	Ribbon.prototype.getRowCardPositions = function(row){
 		row = loopValue(row,ribbon.length-1,0);
-		var values = [this.width];
-		for(column=0; column<this.width; column++){
-			v = 0;
-			for(k=0;k<=row; k++){
-				v += this.twists[column][row];
+
+		var pos = ones(this.width);
+		for(var r=0;r<=row; r++){
+			var twists = this.getRowTwists(r);
+			for(var column=0; column<this.width; column++){
+					pos[column] += twists[column];
+					pos[column] = loopValue(pos[column],this.cards[column].holes,1);
 			}
-			values[column] = loopValue(v,this.cards[column].holes,1);
 		}
-		return values;
+		return pos;
 	}
-	Ribbon.prototype.getTopRowStrings = function(row){
+	Ribbon.prototype.getRowStrings = function(row){
 		row = loopValue(row,ribbon.length-1,0);
+
 		var positions = this.getRowCardPositions(row);
-		var twists = this.getTopRowTwists(row);
+		var twists = this.getRowTwists(row);
+
 		var values = [this.width];
 		for(var column = 0; column<this.width; column++){
 			var i = positions[column];
-			if (twists[column]>0) i--;
+			if (twists[column]<0) i++;
 			i = loopValue(i, this.cards[column].holes-1)
 			values[column] = this.cards[column].strings[i]
 		}
@@ -151,9 +135,15 @@ var CardWeaver = (function(){
 		}
 
 		this.width = 0;
+		this.length = 0;
+
 		this.cards = [];
 		this.twists = [];
 		this.strings = [];
+
+		this.setLength(data.length);
+		this.setWidth(data.width);
+		this.twists = data.twists;
 
 		for(var string of data.strings){
 			var s = this.newString();
@@ -161,16 +151,13 @@ var CardWeaver = (function(){
 			s.name = string.name;
 		}
 
+		let k = 0;
 		for(var card of data.cards){
-			var c = this.newCard();
-			c.setHoles(card.holes);
-			c.strings = card.strings;
-			c.setThreading(card.threading);
+				var c = this.cards[k++];
+				c.setHoles(card.holes);
+				c.strings = card.strings;
+				c.setThreading(card.threading);
 		}
-		this.width = data.width;
-		this.setLength(data.length);
-
-		this.twists = data.twists;
 
 		drawAll();
 		return true;
@@ -178,8 +165,8 @@ var CardWeaver = (function(){
 
 	var Card = function(){
 		this.holes = 4;
-		this.strings = [];
-		this.threading;
+		this.strings = [0,0,0,0];
+		this.threading = "s";
 	}
 	Card.prototype.setString = function(index, string){
 		if (index>=this.holes) return;
@@ -210,7 +197,6 @@ var CardWeaver = (function(){
 		if (this.threading !== threading){
 			this.threading = threading;
 		}
-		updateTurnInstructions();
 	}
 
 	var String = function(){
@@ -228,6 +214,13 @@ var CardWeaver = (function(){
 		var v = value-min;
 		while(v<0)v = max-min+v+1;
 		return v%(max-min+1) + min;
+	}
+	var ones = function(length, depth){
+		var r = 1;
+		if (typeof depth != "undefined") r = ones(depth);
+		var a;
+		for(a=[]; a.length<length; a.push(r));
+		return a;
 	}
 
 	return {
@@ -256,7 +249,7 @@ function swapTwist(e){
 }
 
 function setup(){
-	ribbon.load('{"width":8,"length":12,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"strings":[{"color":"#003bff","name":"Blue"},{"color":"#ca00ff","name":"purple"},{"color":"#cdfffa","name":"silver"}],"twists":[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[1,-1,-1,1,1,-1,-1,-1,-1,1,1,1],[1,-1,-1,1,1,-1,-1,-1,-1,1,1,1],[-1,1,1,-1,-1,1,-1,-1,-1,1,1,1],[1,1,1,-1,-1,-1,1,-1,-1,1,1,-1],[1,1,1,-1,-1,-1,-1,1,1,-1,-1,1],[1,1,1,-1,-1,-1,-1,1,1,-1,-1,1],[1,1,1,1,1,1,1,1,1,1,1,1]]}')
+	ribbon.load('{"width":8,"length":12,"cards":[{"holes":4,"strings":[2,2,2,2],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"z"},{"holes":4,"strings":[1,0,1,0],"threading":"z"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[1,0,1,0],"threading":"s"},{"holes":4,"strings":[0,1,0,1],"threading":"s"},{"holes":4,"strings":[2,2,2,2],"threading":"s"}],"strings":[{"color":"#003bff","name":"Blue"},{"color":"#ca00ff","name":"purple"},{"color":"#cdfffa","name":"silver"}],"twists":[[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1]]}')
 }
 function drawAll(){
 	document.getElementById("settings").innerHTML = '<div class="tile" id="cardSettings"></div><div class="tile" id="formatSettings"></div><div class="tile" id="stringSettings"></div><div class="tile" id="saveAndLoadSettings"></div>';
@@ -295,9 +288,9 @@ function updateRibbon(){
 	for (var k=0; k<rows_preview.length; k++){
 		var inv_k = rows_preview.length-1-k;
 		var i = k-Math.floor(ribbon.length/2);
-		var strings = ribbon.getTopRowStrings(i);
-		var twists = ribbon.getTopRowTwists(i);
-		var twists2 = ribbon.getTopRowTwists(i+1);
+		var strings = ribbon.getRowStrings(i);
+		var twists = ribbon.getRowTwists(i);
+		var twists2 = ribbon.getRowTwists(i+1);
 
 		if (0>i || ribbon.length-1<i){
 			f_rows_instructions[inv_k].className="grey";
@@ -310,10 +303,10 @@ function updateRibbon(){
 			var cell_preview = cells_preview[k2]
 			cell_preview.style.backgroundColor = ribbon.strings[strings[k2]].color;
 			if (twists[k2]<0){
-				cell_preview.className="left";
+				cell_preview.className="right";
 			}
 			else{
-				cell_preview.className="right";
+				cell_preview.className="left";
 			}
 			if (twists2[k2]!=twists[k2]){
 				cell_preview.className+="_c";
@@ -329,7 +322,7 @@ function updateTurnInstructions(){
 		var f_rows_instructions = document.getElementById("forwards_turnInstructions").getElementsByTagName("tr");
 		var b_rows_instructions = document.getElementById("backwards_turnInstructions").getElementsByTagName("tr");
 		for (var row=0; row<ribbon.length; row++){
-				var twists = ribbon.getTopRowTwists(f_rows_instructions.length-row-1);
+				var twists = ribbon.getRowTwists(f_rows_instructions.length-row-1);
 				var cw = [];
 				var ccw = [];
 				for(column=0;column<twists.length;column++){
@@ -377,7 +370,6 @@ function drawcardSettings(){
 	for(var k=0;k<ribbon.width;k++){
 		tabs.push(""+k)
 	}
-
 	drawSectionTabs(parrent, tabs, 0);
 	updatecardSettings();
 }
@@ -398,7 +390,7 @@ function updatecardSettings(){
 
 		let holes_selector = drawNumberInput(section,"card_holes", 2, card.holes)
 		holes_selector.onchange = function(){
-			card.setHoles(holes_selector.valueAsNumber); // NOTE needs to validate
+			card.setHoles(holes_selector.valueAsNumber);
 			updatecardSettings();
 			updateRibbon();
 		};
@@ -412,7 +404,7 @@ function updatecardSettings(){
 
 		for(var k2=0; k2<card.holes; k2++){
 				let hole = k2;
-				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k])
+				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k2])
 				strings.style.backgroundColor = ribbon.strings[card.strings[k2]].color;
 				strings.onchange=function(){
 					strings.style.backgroundColor = ribbon.strings[strings.selectedIndex].color;
@@ -435,10 +427,27 @@ function drawFormatSettings(){
 
 		let length = drawNumberInput(parrent,"ribbon_length", 4, ribbon.length)
 		length.onchange = function(){
-			ribbon.setLength(length.valueAsNumber);
-			drawcardSettings();
-			drawRibbon();
+			if (ribbon.length != length.valueAsNumber){
+				ribbon.setLength(length.valueAsNumber);
+				drawcardSettings();
+				drawRibbon();
+			}
+			var warning="";
+			var k=0;
+			for (card of ribbon.cards){
+				k++;
+				if (ribbon.length%card.holes){
+					warning += "card \""+k+"\" not fully looping\n"
+				}
+			}
+			if (warning!=""){
+				length.style.color = "red";
+			}
+			else{
+					length.style.color = "black";
+			}
 		};
+		length.onchange();
 }
 function drawSaveAndLoadSettings(){
 		var parrent = document.getElementById("saveAndLoadSettings");
@@ -451,7 +460,6 @@ function drawSaveAndLoadSettings(){
 		e.id = "saveloadbox"
 		w.appendChild(e);
 		parrent.appendChild(w);
-
 		let save = drawButtonInput(parrent, "get_savedata")
 		save.onclick = function(){
 				b = document.getElementById("saveloadbox");
