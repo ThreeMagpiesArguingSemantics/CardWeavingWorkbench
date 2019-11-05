@@ -2,6 +2,7 @@ var CardWeaver = (function(){
 	var Ribbon = function(){
 		this.width = 0;
 		this.length = 0;
+
 		this.cards = [];
 		this.strings = [];
 
@@ -114,7 +115,7 @@ var CardWeaver = (function(){
 		var values = [this.width];
 		for(var column = 0; column<this.width; column++){
 			var i = positions[column];
-			if (twists[column]>0) i--;
+			if (twists[column]<0) i++;
 			i = loopValue(i, this.cards[column].holes-1)
 			values[column] = this.cards[column].strings[i]
 		}
@@ -134,9 +135,15 @@ var CardWeaver = (function(){
 		}
 
 		this.width = 0;
+		this.length = 0;
+
 		this.cards = [];
 		this.twists = [];
 		this.strings = [];
+
+		this.setLength(data.length);
+		this.setWidth(data.width);
+		this.twists = data.twists;
 
 		for(var string of data.strings){
 			var s = this.newString();
@@ -144,16 +151,13 @@ var CardWeaver = (function(){
 			s.name = string.name;
 		}
 
+		let k = 0;
 		for(var card of data.cards){
-			var c = this.newCard();
-			c.setHoles(card.holes);
-			c.strings = card.strings;
-			c.setThreading(card.threading);
+				var c = this.cards[k++];
+				c.setHoles(card.holes);
+				c.strings = card.strings;
+				c.setThreading(card.threading);
 		}
-		this.width = data.width;
-		this.setLength(data.length);
-
-		this.twists = data.twists;
 
 		drawAll();
 		return true;
@@ -193,7 +197,6 @@ var CardWeaver = (function(){
 		if (this.threading !== threading){
 			this.threading = threading;
 		}
-		updateTurnInstructions();
 	}
 
 	var String = function(){
@@ -214,7 +217,7 @@ var CardWeaver = (function(){
 	}
 	var ones = function(length, depth){
 		var r = 1;
-		if (depth) r = ones(depth);
+		if (typeof depth != "undefined") r = ones(depth);
 		var a;
 		for(a=[]; a.length<length; a.push(r));
 		return a;
@@ -300,10 +303,10 @@ function updateRibbon(){
 			var cell_preview = cells_preview[k2]
 			cell_preview.style.backgroundColor = ribbon.strings[strings[k2]].color;
 			if (twists[k2]<0){
-				cell_preview.className="left";
+				cell_preview.className="right";
 			}
 			else{
-				cell_preview.className="right";
+				cell_preview.className="left";
 			}
 			if (twists2[k2]!=twists[k2]){
 				cell_preview.className+="_c";
@@ -367,7 +370,6 @@ function drawcardSettings(){
 	for(var k=0;k<ribbon.width;k++){
 		tabs.push(""+k)
 	}
-7
 	drawSectionTabs(parrent, tabs, 0);
 	updatecardSettings();
 }
@@ -441,7 +443,6 @@ function drawSaveAndLoadSettings(){
 		e.id = "saveloadbox"
 		w.appendChild(e);
 		parrent.appendChild(w);
-
 		let save = drawButtonInput(parrent, "get_savedata")
 		save.onclick = function(){
 				b = document.getElementById("saveloadbox");
