@@ -110,7 +110,7 @@ var CardWeaver = (function(){
 		row = loopValue(row,ribbon.length-1,0);
 
 		var positions = this.getRowCardPositions(row);
-		var twists = this.getRowTwists(row-1);
+		var twists = this.getRowTwists(row);
 
 		var values = [this.width];
 		for(var column = 0; column<this.width; column++){
@@ -390,7 +390,7 @@ function updatecardSettings(){
 
 		let holes_selector = drawNumberInput(section,"card_holes", 2, card.holes)
 		holes_selector.onchange = function(){
-			card.setHoles(holes_selector.valueAsNumber); // NOTE needs to validate
+			card.setHoles(holes_selector.valueAsNumber);
 			updatecardSettings();
 			updateRibbon();
 		};
@@ -404,7 +404,7 @@ function updatecardSettings(){
 
 		for(var k2=0; k2<card.holes; k2++){
 				let hole = k2;
-				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k])
+				let strings = drawSelectInput(section,String.fromCharCode(65+k2),options,card.strings[k2])
 				strings.style.backgroundColor = ribbon.strings[card.strings[k2]].color;
 				strings.onchange=function(){
 					strings.style.backgroundColor = ribbon.strings[strings.selectedIndex].color;
@@ -427,10 +427,27 @@ function drawFormatSettings(){
 
 		let length = drawNumberInput(parrent,"ribbon_length", 4, ribbon.length)
 		length.onchange = function(){
-			ribbon.setLength(length.valueAsNumber);
-			drawcardSettings();
-			drawRibbon();
+			if (ribbon.length != length.valueAsNumber){
+				ribbon.setLength(length.valueAsNumber);
+				drawcardSettings();
+				drawRibbon();
+			}
+			var warning="";
+			var k=0;
+			for (card of ribbon.cards){
+				k++;
+				if (ribbon.length%card.holes){
+					warning += "card \""+k+"\" not fully looping\n"
+				}
+			}
+			if (warning!=""){
+				length.style.color = "red";
+			}
+			else{
+					length.style.color = "black";
+			}
 		};
+		length.onchange();
 }
 function drawSaveAndLoadSettings(){
 		var parrent = document.getElementById("saveAndLoadSettings");
