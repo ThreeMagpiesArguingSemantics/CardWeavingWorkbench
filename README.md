@@ -1,9 +1,10 @@
-I wanted to try out and make tablet/card weaving. But it was a hassle to make patterns manually, and the existing solutions were really outdated and limited.
+I wanted to try out and make tablet/card weaving. However, it was a hassle to make patterns manually, and the existing solutions I could find needed to be improved.
 
-So i wrote my own little tool to do what i wanted. Create and view patterns tru the browser.
+I wrote my own little tool to create and view patterns through the browser. The code is a mess, and the UI could be more pretty. But it's functional enough for my purpose.
 
-The code is a mess and the ui is not pretty. But it's functional and better than anything i've found. Feel free to use it however you like an if there is any issues, contact me thru github and i will try to fix it.
+It's written in pure JavaScript, CSS and HTML without any dependencies. Download all the files and run the index.html file, or visit the io page here: https://twofigo.github.io/CardWeavingWorkbench/source/
 
-it's written in pure javascipt, css and html without any dependencies. dwonload all the files and run the index.html file, or visit the io page here: https://twofigo.github.io/CardWeavingWorkbench/source/
+Saving patterns is done through plain JSON. Save the text it gives, and you can use it to get the pattern back to you anytime.
 
-saving patterns is done tru plain human readable JSON text. Just save the text it gives and you can use the text to get the pattern back anytime.
+# Weaving is difficult!
+Weaving was more difficult than coding. So, I gave up on this project overall. The major feature that needs to be added is generating the tablet turn instructions as numbers rather than only the graphical view. I may get back to fixing that if I get back into weaving again.
