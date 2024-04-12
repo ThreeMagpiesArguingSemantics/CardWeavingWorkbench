@@ -7,4 +7,4 @@ It's written in pure JavaScript, CSS and HTML without any dependencies. Download
 Saving patterns is done through plain JSON. Save the text it gives, and you can use it to get the pattern back to you anytime.
 
 # Weaving is difficult!
-Weaving was more difficult than coding. So, I gave up on this project overall. The major feature that needs to be added is generating the tablet turn instructions as numbers rather than only the graphical view. I may get back to fixing that if I get back into weaving again.
+Weaving was more difficult than coding. So, I gave up on this project overall. There are a few quality-of-life improvements I wanted to make, and the number turn instructions may not be entirely accurate (I'm not a good enough weaver to verify). I may get back to fixing that if I get back into weaving again.
